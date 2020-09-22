@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import countries from './countries.json';
+import CountryDetail from './components/CountryDetail';
+import CountriesList from './components/CountriesList';
+import NavBar from './components/NavBar';
+import { Switch, Route } from 'react-router-dom';
+import axios from 'axios';
 
-function App() {
+const App = () => {
+  let [countryList, setCountryList] = useState([]);
+
+  useEffect(() => {
+    async function getData() {
+      let res = await axios.get(`https://countries.tech-savvy.tech/countries
+    `);
+      setCountryList(res.data);
+    }
+    getData();
+  }, []);
+
+  const displayCountries = () => {
+    return countries.map((eachCountry) => {
+      return (
+        <CountriesList code={eachCountry.cca3} name={eachCountry.name.common} />
+      );
+    });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NavBar />
+      <Switch>
+        <Route
+          exact
+          path="/:id"
+          render={(props) => <CountryDetail {...props} />}
+        />
+      </Switch>
+      {displayCountries()}
     </div>
   );
-}
+};
 
 export default App;
